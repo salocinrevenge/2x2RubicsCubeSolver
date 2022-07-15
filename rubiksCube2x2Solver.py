@@ -133,17 +133,19 @@ def resolver(cubo):
     visitados.append((cubo,""))
     atuais.append((cubo,""))
     resolvido = False
+    contador = 0
     while not resolvido: #enquanto o cubo nao for resolvido
-        print(f"atuais ({len(atuais)})")
+        print(f"testando {len(atuais)} cubos")
         novos = []
         for cuboNovo in atuais: #percorrer todos os cubos atuais
-            print(f"cuboNovo: ")
-            mostrar(cuboNovo)
+            #print(f"cuboNovo: ")
+            #mostrar(cuboNovo)
             if criarNovosCubos(cuboNovo,visitados,novos):
                 resolvido = True
                 break
         atuais = novos
-        print("rodei tds")
+        contador+=1
+        print(f"testei com {contador} movimentos")
     print("O cubo foi resolvido com essa sequencia: "+atuais[len(atuais)-1][1])
 
 def girarFH(cubo):
