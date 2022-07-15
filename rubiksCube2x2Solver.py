@@ -26,11 +26,26 @@ def mostrar(cubo):
     '''
     mostra o cubo como um origami de cubo 2d completado com pontos
     '''
+    if len(cubo) ==2:
+        for linha in cubo[0]:
+            for letra in linha:
+                print(letra,end="")
+            print()
+        print()
+        print("caminho usado:" + cubo[1])
+        return
     for linha in cubo:
         for letra in linha:
             print(letra,end="")
         print()
     print()
+
+def mostrarLista(lista):
+    '''
+    mostra todos os cubos de uma lista
+    '''
+    for cubo in lista:
+        mostrar(cubo)
 
 def criarCubo(caminho):
     cubo = []   #matriz de caracteres
@@ -114,17 +129,22 @@ def resolver(cubo):
 
     """
     visitados = []
-    novos = []
+    atuais = []
     visitados.append((cubo,""))
-    novos.append((cubo,""))
+    atuais.append((cubo,""))
     resolvido = False
     while not resolvido: #enquanto o cubo nao for resolvido
-        for cuboNovo in novos:  #possivel erro nessa linha!! TODO
+        print(f"atuais ({len(atuais)})")
+        novos = []
+        for cuboNovo in atuais: #percorrer todos os cubos atuais
+            print(f"cuboNovo: ")
+            mostrar(cuboNovo)
             if criarNovosCubos(cuboNovo,visitados,novos):
                 resolvido = True
                 break
-            novos.remove(cuboNovo)
-    print("O cubo foi resolvido com essa sequencia: "+novos[len(novos)-1][1])
+        atuais = novos
+        print("rodei tds")
+    print("O cubo foi resolvido com essa sequencia: "+atuais[len(atuais)-1][1])
 
 def girarFH(cubo):
     '''
