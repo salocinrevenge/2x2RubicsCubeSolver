@@ -1,6 +1,6 @@
 import pygame       #usando pygame, usar com pip ou baixar separado
 from pygame.locals import *     #necessario para eventos definidos, como o QUIT
-import Labirinto
+from Labirinto import *
 
 ALTURA = 600    #altura
 LARGURA = 1000  #largura
