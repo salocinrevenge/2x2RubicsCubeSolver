@@ -7,6 +7,9 @@ class Labirinto:
         self.linhas = []
         self.grade = 60
         self.novos = []
+        self.resolvido = False
+        self.nCaminhos = 25
+        self.corrigido = False
 
     def montarLabirinto(self, caminho):
         with open(caminho) as arquivo:
@@ -19,7 +22,6 @@ class Labirinto:
                 self.linhas.append(novaLinha)
         
     def mostrarCelula(self, caracter, screen, x, y):
-        nCaminhos = 25
         cor = (0,0,0)
         match caracter:
             case '.':
@@ -30,8 +32,10 @@ class Labirinto:
                 cor = (255,0,0)
             case 'F':
                 cor = (0,0,255)
+            case 'P':
+                cor = (0,255,0)
             case _:
-                cor = (prendedor(0,255-(caracter*(255//nCaminhos)),255),0,prendedor(0,caracter*(255//nCaminhos),255))
+                cor = (self.prendedor(0,255-(caracter*(255//self.nCaminhos)),255),0,self.prendedor(0,caracter*(255//self.nCaminhos),255))
         celula = pygame.Surface((self.grade, self.grade))
         celula.fill(cor)
         screen.blit(celula, (self.posicao[0]+x*self.grade,self.posicao[1]+y*self.grade))
@@ -51,13 +55,48 @@ class Labirinto:
                     
 
     def passoResolver(self):
+        if self.corrigido:
+            return
+        dx=(-1,0,0,1)
+        dy=(0,-1,1,0)
+        if self.resolvido:
+            voltando = self.novos[0]
+            valor = self.linhas[voltando[0]][voltando[1]]
+            self.linhas[voltando[0]][voltando[1]] = 'P'
+            if valor != "C":
+                for i in range(4):
+                    analisando = self.linhas[voltando[0]+dx[i]][voltando[1]+dy[i]]
+                    match analisando:
+                        case '.':
+                            continue
+                        case '#':
+                            continue
+                        case 'C':
+                            for linha in range(len(self.linhas)):
+                                for coluna in range(len(self.linhas[linha])):
+                                    if self.linhas[linha][coluna] not in {'.','#','C','F','P'}:
+                                        self.linhas[linha][coluna] = '.'
+                        case 'F':
+                            continue
+                        case 'P':
+                            continue
+                        case _:
+                            if analisando < valor:
+                                valor = analisando
+                                self.novos[0] = (voltando[0]+dx[i],voltando[1]+dy[i])
+                                return
+                return
+            else:
+                for linha in range(len(self.linhas)):
+                    for coluna in range(len(self.linhas[linha])):
+                        if coluna not in {'.','#','C','F','P'}:
+                            self.linhas[linha][coluna] = '.'
+                self.corrigido = True
         if len(self.novos) == 0:
             self.adicionarInicio()
             return
         novoNovos = []
         for ponta in self.novos:
-            dx=(-1,0,0,1)
-            dy=(0,-1,1,0)
             for i in range(4):
                 carac = self.linhas[ponta[0]+dx[i]][ponta[1]+dy[i]]
                 if carac == ".":
@@ -68,13 +107,15 @@ class Labirinto:
                         distancia = self.linhas[ponta[0]][ponta[1]]+1
                     self.linhas[ponta[0]+dx[i]][ponta[1]+dy[i]] = distancia
                     novoNovos.append((ponta[0]+dx[i],ponta[1]+dy[i]))
+                if carac == "F":
+                    self.novos = [(ponta[0],ponta[1])]
+                    self.resolvido = True
+                    return
         self.novos = novoNovos
                     
-def prendedor(minimo,valor,maximo):
-    if valor<minimo:
-        return minimo
-    if valor > maximo:
-        return maximo
-    return valor
-
-                
+    def prendedor(self,minimo,valor,maximo):
+        if valor<minimo:
+            return minimo
+        if valor > maximo:
+            return maximo
+        return valor
